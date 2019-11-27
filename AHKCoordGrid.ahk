@@ -26,15 +26,14 @@ KeyArray := ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 					colXCoord := colCounter * colSpacing
 					colXCoordAlpha := KeyArray[colCounter+1]
 					StringUpper, colXCoordAlpha, colXCoordAlpha
-					; gui, add, edit, x%colXCoord% y%rowYCoord% ReadOnly cRed, %colXCoordAlpha%%rowYCoordAlpha%
-					gui, add, edit, x%colXCoord% y%rowYCoord%, %colXCoordAlpha%%rowYCoordAlpha%
+					Gui, Add, Progress, w21 h21 x%colXCoord% y%rowYCoord% BackgroundFFFFFF disabled
+					gui, add, text, w21 h21 x%colXCoord% y%rowYCoord% border 0x201 readonly backgroundtrans cBlack, %colXCoordAlpha%%rowYCoordAlpha%
 					colCounter := colCounter + 1
 				}    
 				Until colCounter = numberOfcols			
 				rowCounter := rowCounter + 1
 			}    
-			Until rowCounter = numberOfRows		
-
+			Until rowCounter = numberOfRows
 			Gui, Color, 000115
 			Gui, Show, W%GridWidth% H%GridHeight%, CoordGrid
 			Gui -Caption +AlwaysOnTop
@@ -48,6 +47,7 @@ KeyArray := ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 #IfWinExist CoordGrid
 	#IfWinNotActive CoordGrid
 		NumpadEnter::
+			winmove , CoordGrid,,0,0
 			Gui Show
 			Return
 	#IfWinNotActive	
@@ -55,8 +55,26 @@ KeyArray := ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 
 #IfWinActive CoordGrid
 	NumpadEnter::
+		winmove , CoordGrid,,0,0
 		Gui Hide
 		Return
+		
+	left:: 
+	WinGetPos ,  currentposX, currentposY,,, CoordGrid
+	winmove, CoordGrid,, % currentposX-10
+	return
+	right:: 
+	WinGetPos ,  currentposX, currentposY,,, CoordGrid
+	winmove, CoordGrid,, % currentposX+10
+	return
+	Up:: 
+	WinGetPos ,  currentposX, currentposY,,, CoordGrid
+	winmove, CoordGrid,, , % currentposY-10
+	return
+	Down:: 
+	WinGetPos ,  currentposX, currentposY,,, CoordGrid
+	winmove, CoordGrid,, , % currentposY+10
+	return
 
 	~a:: gosub, RunKey
 	~b:: gosub, RunKey
