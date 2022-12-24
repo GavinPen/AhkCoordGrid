@@ -12,9 +12,13 @@ KeyArray := ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 
 #IfWinNotActive CoordGrid
 	#IfWinNotExist CoordGrid
-		global VerticalScale, numberOfRows, numberOfCols, GridHeight, GridWidth, rowSpacing, colSpacing, KeyArray
+		global VerticalScale, numberOfRows, numberOfCols, GridHeight, GridWidth, rowSpacing, colSpacing, KeyArray, ClickIsLeft
 
 		NumpadEnter::
+		+NumpadEnter:: ; Shift + NumpadEnter
+
+			WhetherToClickLeftOrRight()
+
 	 		; Display Coordinates 
 			rowCounter := 0
 			Loop {
@@ -47,6 +51,8 @@ KeyArray := ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 #IfWinExist CoordGrid
 	#IfWinNotActive CoordGrid
 		NumpadEnter::
+		+NumpadEnter::
+			WhetherToClickLeftOrRight()
 			winmove , CoordGrid,,0,0
 			Gui Show
 			Return
@@ -55,26 +61,28 @@ KeyArray := ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 
 #IfWinActive CoordGrid
 	NumpadEnter::
+	+NumpadEnter::
+		WhetherToClickLeftOrRight()
 		winmove , CoordGrid,,0,0
 		Gui Hide
 		Return
 		
 	left:: 
-	WinGetPos ,  currentposX, currentposY,,, CoordGrid
-	winmove, CoordGrid,, % currentposX-10
-	return
+		WinGetPos ,  currentposX, currentposY,,, CoordGrid
+		winmove, CoordGrid,, % currentposX-10
+		return
 	right:: 
-	WinGetPos ,  currentposX, currentposY,,, CoordGrid
-	winmove, CoordGrid,, % currentposX+10
-	return
+		WinGetPos ,  currentposX, currentposY,,, CoordGrid
+		winmove, CoordGrid,, % currentposX+10
+		return
 	Up:: 
-	WinGetPos ,  currentposX, currentposY,,, CoordGrid
-	winmove, CoordGrid,, , % currentposY-10
-	return
+		WinGetPos ,  currentposX, currentposY,,, CoordGrid
+		winmove, CoordGrid,, , % currentposY-10
+		return
 	Down:: 
-	WinGetPos ,  currentposX, currentposY,,, CoordGrid
-	winmove, CoordGrid,, , % currentposY+10
-	return
+		WinGetPos ,  currentposX, currentposY,,, CoordGrid
+		winmove, CoordGrid,, , % currentposY+10
+		return
 
 	~a:: gosub, RunKey
 	~b:: gosub, RunKey
@@ -139,7 +147,14 @@ KeyArray := ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 		MouseMove, %XCoord%, %YCoord%
 		sleep, 100
 		Gui Hide
-		Click
+		if (ClickIsLeft = True)
+		{
+			Click
+		}
+		else
+		{
+			Click, right
+		}
 		Return
 	}
 
@@ -157,3 +172,14 @@ KeyArray := ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n
 		Return coordToUse
 	}
 #IfWinActive
+
+WhetherToClickLeftOrRight()
+{
+	global ClickIsLeft
+	ClickIsLeft := False
+	if A_ThisHotkey = NumpadEnter
+	{
+		ClickIsLeft := True
+	}
+	Return
+}
